@@ -6,9 +6,10 @@ React Native app to allow study participants to receive push notifications and a
 
 1. Run the following:
 ```
+npm install expo
 npx expo start --tunnel
 ```
-This should display a QR code in your console.
+You will be asked to install some packages, then this should display a QR code in your console.
 
 2. Download the [Expo Go](https://docs.expo.dev/get-started/expo-go/) app on your mobile device and scan the QR code with your camera app (iOS) or the Expo Go app (Android). Make sure that your phone and computer are on the same wifi network.
 
