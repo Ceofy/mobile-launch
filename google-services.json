@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "464333135423",
+    "project_id": "mobilelaunch-20a70",
+    "storage_bucket": "mobilelaunch-20a70.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464333135423:android:bfbd0d1f0c7ea0c0df628a",
+        "android_client_info": {
+          "package_name": "com.sophieliu.mobileLaunch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSFrqIyTpQz84hBgPvQoPolvYOb9rd38o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

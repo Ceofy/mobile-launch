@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ExpoProject",
-    "slug": "ExpoProject",
+    "name": "MobileLaunch",
+    "slug": "mobilelaunch",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,20 +11,27 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sophieliu.mobileLaunch"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.sophieliu.mobileLaunch",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2179ff7b-3b05-41e7-b6df-5840bcd1afdd"
+      }
+    },
+    "owner": "sophieliu"
   }
 }
