@@ -29,25 +29,19 @@ export const usePushNotifications = () => {
     let token;
 
     // Get push notification permissions
-    if (Device.isDevice) {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      setPermissionStatus(existingStatus);
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    setPermissionStatus(existingStatus);
 
-      if (permissionStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        setPermissionStatus(status);
-        if (status !== 'granted') {
-          return;
-        }
-      }
-
-      token = await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig.extra.eas.projectId,
-      });
-    } else {
-      alert('Must be using a physical device for Push notifications');
+    if (permissionStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      setPermissionStatus(status);
     }
+
+    // Get expo push notification token
+    token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig.extra.eas.projectId,
+    });
 
     // Configure additional android settings
     if (Platform.OS === 'android') {
@@ -87,16 +81,7 @@ export const usePushNotifications = () => {
   }, []);
 
   useEffect(() => {
-    console.log(expoPushToken);
-  }, [expoPushToken]);
-
-  useEffect(() => {
-    console.log(permissionStatus);
-  }, []);
-
-  useEffect(() => {
-    // Need userId and auth to communicate with server
-    if (userId && authToken) {
+    if (authToken && userId && expoPushToken) {
       // Define endpoint and headers
       const endpoint =
         process.env.EXPO_PUBLIC_API_HOST +
@@ -108,67 +93,54 @@ export const usePushNotifications = () => {
         Authorization: `Bearer ${authToken}`,
       };
 
-      if (permissionStatus !== 'granted') {
-        console.log('permission not granted, checking if record exists');
-        // Remove push token from db
-        // Check if record exists at all
-        fetch(endpoint + '?user_id=' + userId, {
-          method: 'GET',
+      // Find the record for this user-device in the database
+      fetch(
+        `${endpoint}?user_id=${userId}&pushNotificationToken=${expoPushToken}`,
+        {
           headers,
-        })
-          .then(response => response.json())
-          .then(result => {
-            const data = result.data;
-            if (data.length > 0) {
-              for (const entry of data) {
-                console.log('deleting existing record');
+        }
+      )
+        .then(response => response.json())
+        .then(result => {
+          const data = result.data;
+          if (data.length === 0 && permissionStatus === 'granted') {
+            // Create new record
+            fetch(endpoint, {
+              headers,
+              method: 'POST',
+              body: JSON.stringify({
+                user_id: userId,
+                pushNotificationToken: expoPushToken,
+              }),
+            });
+          } else if (permissionStatus === 'granted') {
+            for (const entry of data) {
+              if (entry.unsubscribed === true) {
+                // Subscribe
                 fetch(endpoint + entry.id, {
-                  method: 'DELETE',
                   headers,
-                });
-              }
-            }
-            if (result.id) {
-            }
-          });
-      } else if (expoPushToken) {
-        // Add push token to db, if it's not already there
-        // Check if record exists already
-        console.log('getting expo token to see if it needs updating');
-        fetch(endpoint + '?user_id=' + userId, {
-          method: 'GET',
-          headers,
-        })
-          .then(response => response.json())
-          .then(result => {
-            const data = result.data;
-            if (data.length > 0) {
-              // Patch if push notification token isn't the same
-              if (data[0].pushNotificationToken !== expoPushToken.data) {
-                console.log('patching with new token');
-                fetch(endpoint + data[0].id, {
                   method: 'PATCH',
-                  headers,
                   body: JSON.stringify({
-                    pushNotificationToken: expoPushToken.data,
+                    unsubscribed: false,
                   }),
                 });
               }
-            } else {
-              // Create new record with token
-              console.log('creating new token record');
-              fetch(endpoint, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify({
-                  user_id: userId,
-                  pushNotificationToken: expoPushToken.data,
-                }),
-              }).catch(error => console.error(JSON.stringify(error)));
             }
-          })
-          .catch(error => console.error(JSON.stringify(error)));
-      }
+          } else {
+            for (const entry of data) {
+              if (entry.unsubscribed === false) {
+                // Unsubscribe
+                fetch(endpoint + entry.id, {
+                  headers,
+                  method: 'PATCH',
+                  body: JSON.stringify({
+                    unsubscribed: true,
+                  }),
+                });
+              }
+            }
+          }
+        });
     }
   }, [expoPushToken, userId, authToken]);
 
