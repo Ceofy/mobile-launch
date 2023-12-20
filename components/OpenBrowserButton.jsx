@@ -1,18 +1,18 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Button } from 'react-native';
 
 import { AuthContext } from '../contexts/auth';
-import { launchWebapp } from '../utils/utils';
 
 const OpenBrowserButton = props => {
-  const { username, password } = props;
+  const { username, password, setWebViewUri } = props;
   const { authenticate } = useContext(AuthContext);
 
   const handlePress = async () => {
     try {
       const mobileLoginToken = await authenticate(username, password);
-
-      launchWebapp(mobileLoginToken);
+      setWebViewUri(
+        `${process.env.EXPO_PUBLIC_APP_HOST}login?mobileLoginToken=${mobileLoginToken}`
+      );
     } catch (error) {
       console.error(error);
     }

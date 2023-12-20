@@ -9,7 +9,8 @@ import { getValueFromSecureStore } from '../utils/utils';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 import { AuthContext } from '../contexts/auth';
 
-const HomeScreen = () => {
+const HomeScreen = props => {
+  const { setWebViewUri } = props;
   const { authError } = useContext(AuthContext);
   const { notification } = usePushNotifications();
 
@@ -55,7 +56,11 @@ const HomeScreen = () => {
         value={password}
         onChangeText={setPassword}
       />
-      <OpenBrowserButton username={username} password={password} />
+      <OpenBrowserButton
+        username={username}
+        password={password}
+        setWebViewUri={setWebViewUri}
+      />
       {authError ? (
         <>
           <Text>Error:</Text>
