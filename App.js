@@ -1,12 +1,12 @@
 import React from 'react';
 
 import AuthContext from './contexts/auth';
-import HomeScreen from './components/HomeScreen';
+import AppScreen from './components/AppScreen';
 
 export default function App() {
   return (
     <AuthContext>
-      <HomeScreen />
+      <AppScreen />
     </AuthContext>
   );
 }

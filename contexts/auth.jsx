@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { USERNAME, PASSWORD } from '../constants/constants';
 import { saveToSecureStore } from '../utils/utils';
 
@@ -7,12 +7,9 @@ export const AuthContext = createContext();
 export default ({ children }) => {
   const [userId, setUserId] = useState();
   const [authToken, setAuthToken] = useState();
+  const [authError, setAuthError] = useState();
 
   const authenticate = async (username, password) => {
-    // Save username and password to app
-    saveToSecureStore(USERNAME, username);
-    saveToSecureStore(PASSWORD, password);
-
     // Get temporary launch token from app
     try {
       const response = await fetch(
@@ -35,10 +32,20 @@ export default ({ children }) => {
 
       result = await response.json();
 
-      setUserId(result.user.id);
-      setAuthToken(result.accessToken);
+      if (result.user) {
+        setUserId(result.user.id);
+        setAuthToken(result.accessToken);
 
-      return result.mobileLoginToken;
+        // Save username and password to app
+        saveToSecureStore(USERNAME, username);
+        saveToSecureStore(PASSWORD, password);
+
+        setAuthError();
+        return result.mobileLoginToken;
+      }
+
+      // Handle error
+      setAuthError(result.message);
     } catch (error) {
       console.error(error);
     }
@@ -47,6 +54,7 @@ export default ({ children }) => {
   const defaultContext = {
     userId,
     authToken,
+    authError,
     authenticate,
   };
 

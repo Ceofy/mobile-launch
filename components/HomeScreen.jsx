@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
@@ -7,8 +7,10 @@ import OpenBrowserButton from './OpenBrowserButton';
 import { USERNAME, PASSWORD } from '../constants/constants';
 import { getValueFromSecureStore } from '../utils/utils';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+import { AuthContext } from '../contexts/auth';
 
 const HomeScreen = () => {
+  const { authError } = useContext(AuthContext);
   const { notification } = usePushNotifications();
 
   const [username, setUsername] = useState('');
@@ -16,13 +18,17 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const fetchSavedCredentials = async () => {
-      const savedUsername = await getValueFromSecureStore(USERNAME);
-      const savedPassword = await getValueFromSecureStore(PASSWORD);
-      if (savedUsername) {
-        setUsername(savedUsername);
-      }
-      if (savedPassword) {
-        setPassword(savedPassword);
+      try {
+        const savedUsername = await getValueFromSecureStore(USERNAME);
+        const savedPassword = await getValueFromSecureStore(PASSWORD);
+        if (savedUsername) {
+          setUsername(savedUsername);
+        }
+        if (savedPassword) {
+          setPassword(savedPassword);
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
 
@@ -50,6 +56,12 @@ const HomeScreen = () => {
         onChangeText={setPassword}
       />
       <OpenBrowserButton username={username} password={password} />
+      {authError ? (
+        <>
+          <Text>Error:</Text>
+          <Text>{authError}</Text>
+        </>
+      ) : null}
       <StatusBar style='auto' />
     </View>
   );

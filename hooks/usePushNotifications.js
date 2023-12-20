@@ -28,20 +28,24 @@ export const usePushNotifications = () => {
   const registerForPushNotificationsAsync = async () => {
     let token;
 
-    // Get push notification permissions
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    setPermissionStatus(existingStatus);
+    try {
+      // Get push notification permissions
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      setPermissionStatus(existingStatus);
 
-    if (permissionStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      setPermissionStatus(status);
+      if (permissionStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        setPermissionStatus(status);
+      }
+
+      // Get expo push notification token
+      token = await Notifications.getExpoPushTokenAsync({
+        projectId: Constants.expoConfig.extra.eas.projectId,
+      });
+    } catch (error) {
+      console.error(error);
     }
-
-    // Get expo push notification token
-    token = await Notifications.getExpoPushTokenAsync({
-      projectId: Constants.expoConfig.extra.eas.projectId,
-    });
 
     // Configure additional android settings
     if (Platform.OS === 'android') {
