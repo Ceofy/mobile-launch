@@ -1,30 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
-import * as SecureStore from 'expo-secure-store';
 import OpenBrowserButton from './OpenBrowserButton';
 
 import { USERNAME, PASSWORD } from '../constants/constants';
-
-const getValueFor = async key => {
-  let result = await SecureStore.getItemAsync(key);
-  return result;
-};
+import { getValueFromSecureStore } from '../utils/utils';
+import { usePushNotifications } from '../hooks/usePushNotifications';
+import { AuthContext } from '../contexts/auth';
 
 const HomeScreen = () => {
+  const { authError } = useContext(AuthContext);
+  const { notification } = usePushNotifications();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
     const fetchSavedCredentials = async () => {
-      const savedUsername = await getValueFor(USERNAME);
-      const savedPassword = await getValueFor(PASSWORD);
-      if (savedUsername) {
-        setUsername(savedUsername);
-      }
-      if (savedPassword) {
-        setPassword(savedPassword);
+      try {
+        const savedUsername = await getValueFromSecureStore(USERNAME);
+        const savedPassword = await getValueFromSecureStore(PASSWORD);
+        if (savedUsername) {
+          setUsername(savedUsername);
+        }
+        if (savedPassword) {
+          setPassword(savedPassword);
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
 
@@ -33,6 +37,14 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      {notification ? (
+        <>
+          <Text>Notification:</Text>
+          <Text>{JSON.stringify(notification.request.content.title)}</Text>
+          <Text>{JSON.stringify(notification.request.content.body)}</Text>
+        </>
+      ) : null}
+
       <TextInput
         placeholder={USERNAME}
         value={username}
@@ -44,6 +56,12 @@ const HomeScreen = () => {
         onChangeText={setPassword}
       />
       <OpenBrowserButton username={username} password={password} />
+      {authError ? (
+        <>
+          <Text>Error:</Text>
+          <Text>{authError}</Text>
+        </>
+      ) : null}
       <StatusBar style='auto' />
     </View>
   );
@@ -52,7 +70,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#bbb',
     alignItems: 'center',
     justifyContent: 'center',
   },
