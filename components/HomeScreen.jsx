@@ -1,32 +1,59 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
+import Checkbox from 'expo-checkbox';
 
 import { StatusBar } from 'expo-status-bar';
 import OpenBrowserButton from './OpenBrowserButton';
 
-import { USERNAME, PASSWORD } from '../constants/constants';
-import { getValueFromSecureStore } from '../utils/utils';
+import {
+  USERNAME,
+  PASSWORD,
+  STAY_SIGNED_IN,
+  SAVE_USERNAME,
+} from '../constants/constants';
+import {
+  getValueFromSecureStorage,
+  getValueFromStorage,
+  saveToSecureStorage,
+  saveToStorage,
+} from '../utils/utils';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 import { AuthContext } from '../contexts/auth';
 
 const HomeScreen = props => {
   const { setWebViewUri } = props;
-  const { authError } = useContext(AuthContext);
+  const { authError, onLayout } = useContext(AuthContext);
   const { notification } = usePushNotifications();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [staySignedInCheckboxValue, setStaySignedInCheckboxValue] = useState();
+  const [saveUsernameCheckboxValue, setSaveUsernameCheckboxValue] = useState();
 
   useEffect(() => {
     const fetchSavedCredentials = async () => {
       try {
-        const savedUsername = await getValueFromSecureStore(USERNAME);
-        const savedPassword = await getValueFromSecureStore(PASSWORD);
-        if (savedUsername) {
-          setUsername(savedUsername);
-        }
-        if (savedPassword) {
-          setPassword(savedPassword);
+        // Check if user opted to save username
+        const saveUsername = await getValueFromStorage(SAVE_USERNAME);
+        setSaveUsernameCheckboxValue(saveUsername);
+
+        if (saveUsername) {
+          // Load username
+          const savedUsername = await getValueFromSecureStorage(USERNAME);
+          if (savedUsername) {
+            setUsername(savedUsername);
+          }
+
+          // Check if user also opted to save password and stay signed in
+          const staySignedIn = await getValueFromStorage(STAY_SIGNED_IN);
+          setStaySignedInCheckboxValue(staySignedIn);
+          if (staySignedIn) {
+            // Load password
+            const savedPassword = await getValueFromSecureStorage(PASSWORD);
+            if (savedPassword) {
+              setPassword(savedPassword);
+            }
+          }
         }
       } catch (error) {
         console.error(error);
@@ -36,8 +63,22 @@ const HomeScreen = props => {
     fetchSavedCredentials();
   }, []);
 
+  const handleStaySignedInCheckboxChange = value => {
+    setStaySignedInCheckboxValue(value);
+    saveToStorage(STAY_SIGNED_IN, value);
+
+    if (value) {
+      handleSaveUsernameCheckboxChange(true);
+    }
+  };
+
+  const handleSaveUsernameCheckboxChange = value => {
+    setSaveUsernameCheckboxValue(value);
+    saveToStorage(SAVE_USERNAME, value);
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayout}>
       {notification ? (
         <>
           <Text>Notification:</Text>
@@ -56,6 +97,30 @@ const HomeScreen = props => {
         value={password}
         onChangeText={setPassword}
       />
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+      >
+        <Checkbox
+          value={saveUsernameCheckboxValue}
+          onValueChange={handleSaveUsernameCheckboxChange}
+        />
+        <Text style={{ marginLeft: 16 }}> Remember my username</Text>
+      </View>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+      >
+        <Checkbox
+          value={staySignedInCheckboxValue}
+          onValueChange={handleStaySignedInCheckboxChange}
+        />
+        <Text style={{ marginLeft: 16 }}> Stay signed in</Text>
+      </View>
       <OpenBrowserButton
         username={username}
         password={password}

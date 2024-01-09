@@ -14,14 +14,14 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sophieliu.mobileLaunch"
+      "bundleIdentifier": "com.datateamuhn.mobilelaunch"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sophieliu.mobileLaunch",
+      "package": "com.datateamuhn.mobilelaunch",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -32,6 +32,6 @@
         "projectId": "2179ff7b-3b05-41e7-b6df-5840bcd1afdd"
       }
     },
-    "owner": "sophieliu"
+    "owner": "datateamuhn"
   }
 }

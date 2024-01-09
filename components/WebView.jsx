@@ -7,7 +7,7 @@ const WebView = props => {
   const { setWebViewUri, uri } = props;
   const webViewRef = useRef();
 
-  const handleWebViewNavigationStateChange = newNavState => {
+  const handleWebViewNavigationStateChange = async newNavState => {
     // On log out, go back to mobile app
     if (newNavState.url === 'https://ease.uhndata.io/login') {
       webViewRef.current.stopLoading();

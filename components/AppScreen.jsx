@@ -1,11 +1,13 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { AuthContext } from '../contexts/auth';
-import { getValueFromSecureStore } from '../utils/utils';
-import { USERNAME, PASSWORD } from '../constants/constants';
+import { getValueFromSecureStorage, getValueFromStorage } from '../utils/utils';
+import { USERNAME, PASSWORD, STAY_SIGNED_IN } from '../constants/constants';
 import * as SplashScreen from 'expo-splash-screen';
+import * as WebBrowser from 'expo-web-browser';
 
 import HomeScreen from './HomeScreen';
 import WebView from './/WebView';
+import { Platform } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -15,33 +17,47 @@ const AppScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const attemptToLaunchWebapp = async () => {
+    const initialOperations = async () => {
       try {
-        const username = await getValueFromSecureStore(USERNAME);
-        const password = await getValueFromSecureStore(PASSWORD);
+        // Check if user opted to stay signed in
+        const staySignedIn = await getValueFromStorage(STAY_SIGNED_IN);
 
-        if (username && password) {
-          const mobileLoginToken = await authenticate(username, password);
-          if (mobileLoginToken) {
-            setWebViewUri(
-              `${process.env.EXPO_PUBLIC_APP_HOST}login?mobileLoginToken=${mobileLoginToken}`
-            );
+        // If they did, attempt to sign them in
+        if (staySignedIn) {
+          const username = await getValueFromSecureStorage(USERNAME);
+          const password = await getValueFromSecureStorage(PASSWORD);
+
+          if (username && password) {
+            const mobileLoginToken = await authenticate(username, password);
+            if (mobileLoginToken) {
+              setWebViewUri(
+                `${process.env.EXPO_PUBLIC_APP_HOST}login?mobileLoginToken=${mobileLoginToken}`
+              );
+            }
           }
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    attemptToLaunchWebapp();
+    initialOperations();
   }, []);
 
   useEffect(() => {
     if (isLoading && webViewUri) {
       setIsLoading(false);
-      SplashScreen.hideAsync();
     }
   }, [webViewUri]);
+
+  useEffect(() => {
+    console.log(isLoading);
+    if (!isLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return null;

@@ -86,6 +86,7 @@ export const usePushNotifications = () => {
 
   useEffect(() => {
     if (authToken && userId && expoPushToken) {
+      console.log(expoPushToken);
       // Define endpoint and headers
       const endpoint =
         process.env.EXPO_PUBLIC_API_HOST +

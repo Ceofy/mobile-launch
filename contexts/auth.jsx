@@ -1,6 +1,4 @@
 import React, { createContext, useState } from 'react';
-import { USERNAME, PASSWORD } from '../constants/constants';
-import { saveToSecureStore } from '../utils/utils';
 
 export const AuthContext = createContext();
 
@@ -35,10 +33,6 @@ export default ({ children }) => {
       if (result.user) {
         setUserId(result.user.id);
         setAuthToken(result.accessToken);
-
-        // Save username and password to app
-        saveToSecureStore(USERNAME, username);
-        saveToSecureStore(PASSWORD, password);
 
         setAuthError();
         return result.mobileLoginToken;
