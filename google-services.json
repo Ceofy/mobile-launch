@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "464333135423",
-    "project_id": "mobilelaunch-20a70",
-    "storage_bucket": "mobilelaunch-20a70.appspot.com"
+    "project_number": "303275872551",
+    "project_id": "mobilelaunch-a3581",
+    "storage_bucket": "mobilelaunch-a3581.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:464333135423:android:bfbd0d1f0c7ea0c0df628a",
+        "mobilesdk_app_id": "1:303275872551:android:9b3b2c29aa401fbd691902",
         "android_client_info": {
-          "package_name": "com.sophieliu.mobileLaunch"
+          "package_name": "com.datateamuhn.mobilelaunch"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBSFrqIyTpQz84hBgPvQoPolvYOb9rd38o"
+          "current_key": "AIzaSyB0XoSicYsS4MOPTvyPdB6H9PIyCEbbK0A"
         }
       ],
       "services": {
