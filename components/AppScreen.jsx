@@ -53,7 +53,6 @@ const AppScreen = () => {
   }, [webViewUri]);
 
   useEffect(() => {
-    console.log(isLoading);
     if (!isLoading) {
       SplashScreen.hideAsync();
     }

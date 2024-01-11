@@ -108,7 +108,7 @@ export const usePushNotifications = () => {
         .then(response => response.json())
         .then(result => {
           const data = result.data;
-          if (data.length === 0 && permissionStatus === 'granted') {
+          if (data && data.length === 0 && permissionStatus === 'granted') {
             // Create new record
             fetch(endpoint, {
               headers,
