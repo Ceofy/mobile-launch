@@ -1,13 +1,14 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { AuthContext } from '../contexts/auth';
-import { getValueFromSecureStorage, getValueFromStorage } from '../utils/utils';
-import { USERNAME, PASSWORD, STAY_SIGNED_IN } from '../constants/constants';
+import { AuthContext } from 'MobileLaunch/contexts/auth';
+import {
+  getValueFromSecureStorage,
+  getValueFromStorage,
+} from 'MobileLaunch/utils';
+import { USERNAME, PASSWORD, STAY_SIGNED_IN } from 'MobileLaunch/constants';
 import * as SplashScreen from 'expo-splash-screen';
-import * as WebBrowser from 'expo-web-browser';
 
-import HomeScreen from './HomeScreen';
-import WebView from './/WebView';
-import { Platform } from 'react-native';
+import HomeScreen from 'MobileLaunch/pages/HomeScreen';
+import WebView from 'MobileLaunch/components/WebView';
 
 SplashScreen.preventAutoHideAsync();
 
