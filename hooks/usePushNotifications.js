@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef, useContext } from 'react';
-import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-import { AuthContext } from '../contexts/auth';
+import { AuthContext } from 'MobileLaunch/contexts/auth';
 
 export const usePushNotifications = () => {
   Notifications.setNotificationHandler({

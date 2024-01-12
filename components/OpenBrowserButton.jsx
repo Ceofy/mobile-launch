@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
-import { Button } from 'react-native';
+import { Button } from 'react-native-paper';
 
-import { AuthContext } from '../contexts/auth';
+import { AuthContext } from 'MobileLaunch/contexts/auth';
 import {
   USERNAME,
   PASSWORD,
   STAY_SIGNED_IN,
   SAVE_USERNAME,
-} from '../constants/constants';
-import { getValueFromStorage, saveToSecureStorage } from '../utils/utils';
+} from 'MobileLaunch/constants';
+import { getValueFromStorage, saveToSecureStorage } from 'MobileLaunch/utils';
 
 const OpenBrowserButton = props => {
   const { username, password, setWebViewUri } = props;
@@ -49,9 +49,12 @@ const OpenBrowserButton = props => {
   return (
     <Button
       onPress={handlePress}
-      title={'Open ' + process.env.EXPO_PUBLIC_PROJECT_NAME}
       accessibilityLabel={'Open ' + process.env.EXPO_PUBLIC_PROJECT_NAME}
-    />
+      mode='contained'
+      dark={true}
+    >
+      Log In
+    </Button>
   );
 };
 
